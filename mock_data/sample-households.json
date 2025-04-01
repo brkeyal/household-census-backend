@@ -1,0 +1,42 @@
+[
+  {
+    "familyName": "Smith",
+    "address": "123 Main Street, Springfield, IL 60601"
+  },
+  {
+    "familyName": "Johnson",
+    "address": "456 Oak Avenue, Franklin, CA 90001"
+  },
+  {
+    "familyName": "Williams",
+    "address": "789 Cedar Lane, Greenville, TX 75001"
+  },
+  {
+    "familyName": "Jones",
+    "address": "321 Maple Road, Bristol, FL 33101"
+  },
+  {
+    "familyName": "Brown",
+    "address": "654 Pine Street, Clinton, IL 60601"
+  },
+  {
+    "familyName": "Davis",
+    "address": "987 Elm Boulevard, Georgetown, PA 19101"
+  },
+  {
+    "familyName": "Miller",
+    "address": "147 Washington Avenue, Salem, OH 44101"
+  },
+  {
+    "familyName": "Wilson",
+    "address": "258 Park Lane, Madison, GA 30301"
+  },
+  {
+    "familyName": "Moore",
+    "address": "369 Lake Drive, Kingston, NC 27601"
+  },
+  {
+    "familyName": "Taylor",
+    "address": "753 River Road, Arlington, MI 48201"
+  }
+]
