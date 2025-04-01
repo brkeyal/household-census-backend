@@ -1,39 +1,42 @@
-// src/controllers/householdController.ts
-import { Request, Response } from 'express';
-import Household from '../models/Household'; // Remove .js extension
-import path from 'path';
-import fs from 'fs';
+const Household = require('../models/Household');
+const path = require('path');
+const fs = require('fs');
 
 // Get all households
-export const getHouseholds = async (req: Request, res: Response) => {
+exports.getHouseholds = async (req, res) => {
   try {
+    console.log('Getting all households');
     const households = await Household.find().select('-survey'); // Exclude detailed survey data
+    console.log(`Found ${households.length} households`);
     res.status(200).json(households);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('Error getting households:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Get a single household by ID
-export const getHousehold = async (req: Request, res: Response) => {
+exports.getHousehold = async (req, res) => {
   try {
+    console.log(`Getting household with ID: ${req.params.id}`);
     const household = await Household.findById(req.params.id);
     
     if (!household) {
+      console.log(`Household with ID ${req.params.id} not found`);
       return res.status(404).json({ message: 'Household not found' });
     }
     
     res.status(200).json(household);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error(`Error getting household ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Create a new household
-export const createHousehold = async (req: Request, res: Response) => {
+exports.createHousehold = async (req, res) => {
   try {
+    console.log('Creating new household:', req.body);
     const { familyName, address } = req.body;
     
     if (!familyName || !address) {
@@ -49,21 +52,24 @@ export const createHousehold = async (req: Request, res: Response) => {
     });
     
     const savedHousehold = await newHousehold.save();
+    console.log('Household created successfully:', savedHousehold._id);
     res.status(201).json(savedHousehold);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('Error creating household:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Update a household
-export const updateHousehold = async (req: Request, res: Response) => {
+exports.updateHousehold = async (req, res) => {
   try {
+    console.log(`Updating household with ID: ${req.params.id}`, req.body);
     const { familyName, address } = req.body;
     
     const household = await Household.findById(req.params.id);
     
     if (!household) {
+      console.log(`Household with ID ${req.params.id} not found for update`);
       return res.status(404).json({ message: 'Household not found' });
     }
     
@@ -71,35 +77,41 @@ export const updateHousehold = async (req: Request, res: Response) => {
     if (address) household.address = address;
     
     const updatedHousehold = await household.save();
+    console.log('Household updated successfully');
     res.status(200).json(updatedHousehold);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error(`Error updating household ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Delete a household
-export const deleteHousehold = async (req: Request, res: Response) => {
+exports.deleteHousehold = async (req, res) => {
   try {
+    console.log(`Deleting household with ID: ${req.params.id}`);
     const result = await Household.findByIdAndDelete(req.params.id);
     
     if (!result) {
+      console.log(`Household with ID ${req.params.id} not found for deletion`);
       return res.status(404).json({ message: 'Household not found' });
     }
     
+    console.log('Household deleted successfully');
     res.status(200).json({ message: 'Household deleted successfully' });
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error(`Error deleting household ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Submit a survey for a household
-export const submitSurvey = async (req: Request, res: Response) => {
+exports.submitSurvey = async (req, res) => {
   try {
+    console.log(`Submitting survey for household with ID: ${req.params.id}`);
     const household = await Household.findById(req.params.id);
     
     if (!household) {
+      console.log(`Household with ID ${req.params.id} not found for survey submission`);
       return res.status(404).json({ message: 'Household not found' });
     }
     
@@ -107,7 +119,10 @@ export const submitSurvey = async (req: Request, res: Response) => {
     let focalPointImagePath = null;
     if (req.file) {
       focalPointImagePath = `/uploads/${req.file.filename}`;
+      console.log(`Uploaded image: ${focalPointImagePath}`);
     }
+    
+    console.log('Survey data received:', req.body);
     
     // Process form data
     const { 
@@ -137,7 +152,9 @@ export const submitSurvey = async (req: Request, res: Response) => {
     
     // Set each field individually
     household.set('survey.focalPoint', focalPoint);
-    household.set('survey.focalPointImage', focalPointImagePath);
+    if (focalPointImagePath) {
+      household.set('survey.focalPointImage', focalPointImagePath);
+    }
     household.set('survey.familyMembers', parsedFamilyMembers);
     household.set('survey.carCount', parseInt(carCount));
     household.set('survey.hasPets', hasPets === 'yes');
@@ -150,9 +167,10 @@ export const submitSurvey = async (req: Request, res: Response) => {
     household.dateSurveyed = new Date();
     
     const updatedHousehold = await household.save();
+    console.log('Survey submitted successfully');
     res.status(200).json(updatedHousehold);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error(`Error submitting survey for household ${req.params.id}:`, error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

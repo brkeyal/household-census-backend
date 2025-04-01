@@ -1,8 +1,6 @@
-// src/middlewares/fileUpload.ts
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { Request } from 'express';
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -12,10 +10,10 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Configure storage
 const storage = multer.diskStorage({
-  destination: (req: Request, file: Express.Multer.File, cb: Function) => {
+  destination: (req, file, cb) => {
     cb(null, uploadsDir);
   },
-  filename: (req: Request, file: Express.Multer.File, cb: Function) => {
+  filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const fileExt = path.extname(file.originalname);
     cb(null, `${file.fieldname}-${uniqueSuffix}${fileExt}`);
@@ -23,7 +21,7 @@ const storage = multer.diskStorage({
 });
 
 // Filter for acceptable file types
-const fileFilter = (req: Request, file: Express.Multer.File, cb: Function) => {
+const fileFilter = (req, file, cb) => {
   // Accept image files only
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
@@ -41,4 +39,4 @@ const upload = multer({
   }
 });
 
-export default upload;
+module.exports = upload;

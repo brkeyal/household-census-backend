@@ -1,33 +1,5 @@
-// src/models/Household.ts
-import mongoose, { Document, Schema } from 'mongoose';
-
-// Define types
-interface IFamilyMember extends Document {
-  firstName: string;
-  lastName: string;
-  birthDate: Date;
-}
-
-interface ISurvey extends Document {
-  focalPoint: string;
-  focalPointImage: string | null;
-  familyMembers: IFamilyMember[];
-  carCount: number;
-  hasPets: boolean;
-  petCount: number;
-  housingType: 'Apartment' | 'House' | 'Condominium' | 'Duplex' | 'Mobile home' | 'Other';
-  environmentalPractices: string[];
-}
-
-interface IHousehold extends Document {
-  familyName: string;
-  address: string;
-  status: 'pending' | 'completed';
-  dateSurveyed: Date | null;
-  survey: ISurvey | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 // Family member sub-schema
 const FamilyMemberSchema = new Schema({
@@ -119,6 +91,6 @@ const HouseholdSchema = new Schema({
   }
 }, { timestamps: true });
 
-const Household = mongoose.model<IHousehold>('Household', HouseholdSchema);
+const Household = mongoose.model('Household', HouseholdSchema);
 
-export default Household;
+module.exports = Household;

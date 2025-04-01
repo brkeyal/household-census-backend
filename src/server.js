@@ -1,16 +1,9 @@
-console.log('============== SERVER STARTING ==============');
-
-
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import householdRoutes from './routes/householdRoutes';
-
-import routes from './routes/index';
-
-console.log('Routes module imported:', typeof routes === 'object' ? 'YES' : 'NO', Object.keys(routes).length > 0 ? 'with handlers' : 'empty');
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
+const householdRoutes = require('./routes/householdRoutes');
 
 // Configure environment variables
 dotenv.config();
@@ -31,11 +24,7 @@ app.get('/', (req, res) => {
   res.send('Household Census API is running');
 });
 
-// API routes
-app.use('/api/households', householdRoutes);
-
-
-// Debug route
+// Debug routes
 app.get('/api/debug', (req, res) => {
   res.json({ message: 'Debug route is working' });
 });
@@ -44,8 +33,10 @@ app.get('/api/status', (req, res) => {
   res.json({ status: 'API is working', routes: 'Directly registered' });
 });
 
-console.log('Routes registered at /api');
+// API routes
+app.use('/api/households', householdRoutes);
 
+console.log('Routes registered at /api/households');
 
 // Connect to MongoDB
 mongoose
@@ -60,4 +51,4 @@ mongoose
     console.error('MongoDB connection error:', error);
   });
 
-export default app;
+module.exports = app;
