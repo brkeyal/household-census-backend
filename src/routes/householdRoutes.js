@@ -19,4 +19,5 @@ router.delete('/:id', householdController.deleteHousehold);
 // Survey submission route (with file upload)
 router.post('/:id/survey', upload.single('focalPointImage'), householdController.submitSurvey);
 
+
 module.exports = router;

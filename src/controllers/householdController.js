@@ -115,12 +115,25 @@ exports.submitSurvey = async (req, res) => {
       return res.status(404).json({ message: 'Household not found' });
     }
     
-    // Process file upload if present
-    let focalPointImagePath = null;
-    if (req.file) {
-      focalPointImagePath = `/uploads/${req.file.filename}`;
-      console.log(`Uploaded image: ${focalPointImagePath}`);
-    }
+// In submitSurvey function
+let focalPointImagePath = null;
+if (req.file) {
+  console.log("Uploaded file details:", JSON.stringify(req.file));
+
+  const useS3 = (process.env.NODE_ENV === 'production' || process.env.FORCE_S3 === 'true');
+  console.log("useS3 Value:" ,useS3);
+  
+  if (useS3) {
+    // S3 files already have a full URL in req.file.location
+    focalPointImagePath = req.file.location;
+    console.log(`Uploaded image to S3: ${focalPointImagePath}`);
+  } else {
+    // Local files need the /uploads/ path prefix
+    focalPointImagePath = `/uploads/${req.file.filename}`;
+    console.log(`Uploaded image: ${focalPointImagePath}`);
+  }
+}
+
     
     console.log('Survey data received:', req.body);
     

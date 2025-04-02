@@ -1,42 +1,14 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+// middlewares/fileUpload.js
+const localUpload = require('./localUpload');
+const s3Upload = require('./s3Upload');
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Use S3 in production, local storage in development
+const useS3 = (process.env.NODE_ENV === 'production' || process.env.FORCE_S3 === 'true');
+console.log("useS3 Value:" ,useS3);
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const fileExt = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${fileExt}`);
-  }
-});
+const upload = useS3 ? s3Upload : localUpload;
+// const upload = s3Upload // HACK
 
-// Filter for acceptable file types
-const fileFilter = (req, file, cb) => {
-  // Accept image files only
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed!'), false);
-  }
-};
-
-// Create multer upload instance
-const upload = multer({ 
-  storage, 
-  fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max file size
-  }
-});
+console.log(`Using ${useS3 ? 'S3' : 'local'} storage for file uploads`);
 
 module.exports = upload;
