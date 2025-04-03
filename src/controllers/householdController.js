@@ -2,7 +2,7 @@ const Household = require('../models/Household');
 const path = require('path');
 const fs = require('fs');
 
-// Get all households
+/// Get all households
 exports.getHouseholds = async (req, res) => {
   try {
     console.log('Getting all households');
