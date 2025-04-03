@@ -35,6 +35,7 @@ jobs:
         echo "AWS_SECRET_ACCESS_KEY=test-secret-key" >> .env.test
         echo "AWS_REGION=us-east-1" >> .env.test
         echo "S3_BUCKET_NAME=test-bucket" >> .env.test
+        echo "FORCE_S3=false" >> .env.test
     
     - name: Run unit tests
       run: npm run test:unit
@@ -43,7 +44,7 @@ jobs:
       run: npm run test:coverage
       
     - name: Upload coverage as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage
         path: coverage/
